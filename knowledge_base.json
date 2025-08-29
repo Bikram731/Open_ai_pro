@@ -1,0 +1,333 @@
+{
+  "api_summary": {
+    "World": {
+      "addPolygon": {
+        "description": "Creates a physical polygon body from an array of vertices.",
+        "params": "vertices (Vector2[])"
+      },
+      "addDisc": {
+        "description": "Creates a physical circular body.",
+        "params": "radius (double)"
+      },
+      "addRectangle": {
+        "description": "Creates a physical rectangular body.",
+        "params": "width (double), height (double)"
+      },
+      "addWeldJoint": {
+        "description": "Rigidly connects two bodies as if they were one.",
+        "params": "body1 (Body), body2 (Body), anchor (Vector2)"
+      },
+      "addAngleJoint": {
+        "description": "Constrains the relative angle between two bodies.",
+        "params": "body1 (Body), body2 (Body)"
+      },
+      "addDistanceJoint": {
+        "description": "Connects two bodies ensuring the distance between them is constant. Can also act as a spring.",
+        "params": "body1 (Body), body2 (Body), anchor1 (Vector2), anchor2 (Vector2)"
+      },
+      "addFrictionJoint": {
+        "description": "Applies friction to a body to slow it down.",
+        "params": "body1 (Body), body2 (Body), anchor (Vector2)"
+      },
+      "addMotorJoint": {
+        "description": "Creates a motor to move and rotate a body to a target position.",
+        "params": "body1 (Body), body2 (Body)"
+      },
+      "addPinJoint": {
+        "description": "Pins a body to a specific point in the world using a spring-damper system.",
+        "params": "body (Body), anchor (Vector2), frequency (double), dampingRatio (double), maximumForce (double)"
+      },
+      "addPrismaticJoint": {
+        "description": "Constrains linear motion between two bodies along an axis, like a piston.",
+        "params": "body1 (Body), body2 (Body), anchor (Vector2), axis (Vector2)"
+      },
+      "addPulleyJoint": {
+        "description": "Connects two bodies with a rope over two fixed points in the world, like a pulley system.",
+        "params": "body1 (Body), body2 (Body), pulleyAnchor1 (Vector2), pulleyAnchor2 (Vector2), bodyAnchor1 (Vector2), bodyAnchor2 (Vector2)"
+      },
+      "addRevoluteJoint": {
+        "description": "Creates a hinge or pivot between two bodies at a specific point.",
+        "params": "body1 (Body), body2 (Body), anchor (Vector2)"
+      },
+      "addRopeJoint": {
+        "description": "Constrains the maximum distance between two bodies, like a rope.",
+        "params": "body1 (Body), body2 (Body), anchor1 (Vector2), anchor2 (Vector2)"
+      },
+      "addSpindleJoint": {
+        "description": "Connects two rotating bodies like a real pulley with a thread wounding over them.",
+        "params": "body1 (Body), body2 (Body), anchor1 (Vector2), anchor2 (Vector2)"
+      },
+      "addWheelJoint": {
+        "description": "Creates a joint for a vehicle's wheel and suspension.",
+        "params": "body1 (Body), body2 (Body), anchor (Vector2), axis (Vector2)"
+      },
+      "addGraph": {
+        "description": "Adds a graph plotter to a body or joint to visualize its properties.",
+        "params": "target (Body or Joint)"
+      },
+      "addTracer": {
+        "description": "Adds a tracer to a point on a body to visualize its path.",
+        "params": "body (Body), localPoint (Vector2)"
+      },
+      "addTimer": {
+        "description": "Adds a new timer to the simulation.",
+        "params": "None"
+      },
+      "createGroup": {
+        "description": "Creates a logical group of bodies to manipulate them together.",
+        "params": "None"
+      },
+      "getField": {
+        "description": "Finds an existing field by its name. Does NOT create a new field.",
+        "params": "name (String)"
+      },
+      "clearAll": {
+        "description": "Clears all objects from the simulation.",
+        "params": "None"
+      },
+      "setGravity": {
+        "description": "Sets the world's gravity.",
+        "params": "x (double), y (double)"
+      },
+      "getCamera": {
+        "description": "Gets the world camera object to control the view.",
+        "params": "None"
+      }
+    },
+    "Body": {
+      "setMass": {
+        "description": "Sets the mass of a body.",
+        "params": "mass (double)"
+      },
+      "setCharge": {
+        "description": "Sets the electric charge on a body.",
+        "params": "charge (double)"
+      },
+      "setFillColor": {
+        "description": "Sets the fill color using RGBA values (0-1).",
+        "params": "r (double), g (double), b (double), a (double)"
+      },
+      "setPosition": {
+        "description": "Sets the position of a body's center of mass.",
+        "params": "position (Vector2)"
+      },
+      "setzOrder": {
+        "description": "Sets the drawing order. Higher numbers are drawn on top.",
+        "params": "order (int)"
+      },
+      "setRenderable": {
+        "description": "Makes a body visible or invisible.",
+        "params": "renderable (boolean)"
+      },
+      "rotate": {
+        "description": "Rotates the body by a certain angle in radians.",
+        "params": "angle (double)"
+      },
+      "setAction": {
+        "description": "Attaches a scripted animation or sequence of actions to a body.",
+        "params": "action (Action)"
+      }
+    },
+    "COMBody": {
+      "addBody": {
+        "description": "Adds a body to a group.",
+        "params": "body (Body)"
+      },
+      "rotate": {
+        "description": "Rotates the entire group of bodies around their collective center of mass.",
+        "params": "angle (double)"
+      }
+    },
+    "Field": {
+      "setExpressions": {
+        "description": "Sets the strength and direction of a field using mathematical expressions.",
+        "params": "xExpression (String), yExpression (String)"
+      },
+      "setEnabled": {
+        "description": "Activates or deactivates a field.",
+        "params": "enabled (boolean)"
+      }
+    },
+    "Actions": {
+      "moveTo": {
+        "description": "Creates an action to move a body to a target position over time.",
+        "params": "x (double), y (double), duration (double)"
+      },
+      "rotateBy": {
+        "description": "Creates an action to rotate a body by a certain amount over time.",
+        "params": "rotationAmount (double), duration (double)"
+      },
+      "fadeOut": {
+        "description": "Creates an action to make a body become transparent over time.",
+        "params": "duration (double)"
+      },
+      "sequence": {
+        "description": "Creates a complex action where several actions happen one after another.",
+        "params": "actions (Action...)"
+      },
+      "parallel": {
+        "description": "Creates a complex action where several actions happen at the same time.",
+        "params": "actions (Action...)"
+      }
+    },
+    "App": {
+      "setPaused": {
+        "description": "Pauses or resumes the entire simulation.",
+        "params": "paused (boolean)"
+      },
+      "showMessageBox": {
+        "description": "Displays a message popup to the user.",
+        "params": "title (String), message (String)"
+      },
+      "readString": {
+        "description": "Displays a popup that asks the user to type in some text.",
+        "params": "message (String)"
+      }
+    },
+    "Geometry": {
+      "createPoint": {
+        "description": "Creates a non-physical point at a specific coordinate.",
+        "params": "x (double), y (double)"
+      },
+      "createLineSegment": {
+        "description": "Creates a non-physical line segment between two points.",
+        "params": "point1 (Point2D), point2 (Point2D)"
+      },
+      "createCircle": {
+        "description": "Creates a non-physical circle.",
+        "params": "centerX (double), centerY (double), radius (double)"
+      }
+    },
+    "Console": {
+      "print": {
+        "description": "Prints a message to the SimPhy console.",
+        "params": "message (String)"
+      },
+      "clear": {
+        "description": "Clears all text from the console.",
+        "params": "None"
+      }
+    },
+    "Preferences": {
+      "setBackGroundColor": {
+        "description": "Sets the background color of the simulation canvas.",
+        "params": "color (Object)"
+      },
+      "setGridEnabled": {
+        "description": "Shows or hides the background grid.",
+        "params": "enabled (boolean)"
+      }
+    },
+    "Grapher": {
+      "setParams": {
+        "description": "Sets which properties of an object to plot on the X and Y axes.",
+        "params": "paramX (int[]), paramY (int[])"
+      }
+    },
+    "Tracer": {
+      "setColor": {
+        "description": "Sets the color of the tracer path.",
+        "params": "color (Color)"
+      },
+      "reset": {
+        "description": "Clears the path of a tracer.",
+        "params": "None"
+      }
+    },
+    "Timer": {
+      "setTime": {
+        "description": "Sets the current time of a timer.",
+        "params": "time (double)"
+      },
+      "start": {
+        "description": "Starts or resumes a timer.",
+        "params": "None"
+      },
+      "stop": {
+        "description": "Stops a timer.",
+        "params": "None"
+      }
+    },
+    "WorldCamera": {
+      "zoomTo": {
+        "description": "Sets the camera zoom to a specific level.",
+        "params": "zoomPercentage (double)"
+      },
+      "translate": {
+        "description": "Moves the camera by a certain amount.",
+        "params": "x (double), y (double)"
+      },
+      "toOrigin": {
+        "description": "Resets the camera to the world origin.",
+        "params": "None"
+      }
+    }
+  },
+  "concept_dictionary": {
+    "create": [
+      "add",
+      "make",
+      "build",
+      "create"
+    ],
+    "triangle": "World.addPolygon",
+    "box": "World.addRectangle",
+    "block": "World.addRectangle",
+    "rectangle": "World.addRectangle",
+    "circle": "World.addDisc",
+    "ball": "World.addDisc",
+    "disc": "World.addDisc",
+    "charge": "body.setCharge",
+    "positive": "+",
+    "negative": "-",
+    "weld": "World.addWeldJoint",
+    "connect": "World.addWeldJoint",
+    "attach": "World.addWeldJoint",
+    "hinge": "World.addRevoluteJoint",
+    "pivot": "World.addRevoluteJoint",
+    "pin": "World.addPinJoint",
+    "motor": "World.addMotorJoint",
+    "gear": "World.addAngleJoint",
+    "pulley": "World.addPulleyJoint",
+    "rope": "World.addRopeJoint",
+    "string": "World.addRopeJoint",
+    "thread": "World.addSpindleJoint",
+    "spindle": "World.addSpindleJoint",
+    "piston": "World.addPrismaticJoint",
+    "slider": "World.addPrismaticJoint",
+    "wheel": "World.addWheelJoint",
+    "group": "World.createGroup",
+    "electric field": "World.getField",
+    "color": "body.setFillColor",
+    "background color": "Preferences.setBackGroundColor",
+    "mass": "body.setMass",
+    "heavy": "high mass",
+    "light": "low mass",
+    "tilt": "body.rotate",
+    "rotate": "body.rotate",
+    "visible": "body.setRenderable(true)",
+    "invisible": "body.setRenderable(false)",
+    "hide": "body.setRenderable(false)",
+    "show grid": "Preferences.setGridEnabled(true)",
+    "hide grid": "Preferences.setGridEnabled(false)",
+    "move to": "Actions.moveTo",
+    "fade out": "Actions.fadeOut",
+    "in order": "Actions.sequence",
+    "at the same time": "Actions.parallel",
+    "pause": "App.setPaused",
+    "show message": "App.showMessageBox",
+    "ask user": "App.readString",
+    "print": "Console.print",
+    "log": "Console.print",
+    "draw point": "Geometry.createPoint",
+    "draw line": "Geometry.createLineSegment",
+    "plot": "World.addGraph",
+    "trace": "World.addTracer",
+    "path": "World.addTracer",
+    "timer": "World.addTimer",
+    "zoom": "WorldCamera.zoomTo",
+    "pan": "WorldCamera.translate",
+    "center camera": "WorldCamera.toOrigin"
+  }
+}
+

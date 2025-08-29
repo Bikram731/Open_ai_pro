@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-gray-900">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SimPhy AI Script Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Simple animation for the loading spinner */
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .loader {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #3498db;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+    </style>
+</head>
+<body class="h-full flex flex-col items-center justify-center p-4 bg-gray-900 text-white font-sans">
+
+    <div class="w-full max-w-4xl bg-gray-800 rounded-2xl shadow-2xl p-8 space-y-6">
+        <!-- Header -->
+        <div class="text-center">
+            <h1 class="text-4xl font-bold text-cyan-400">SimPhy AI Script Generator</h1>
+            <p class="text-gray-400 mt-2">Describe the simulation you want to create, and the AI will generate the script.</p>
+        </div>
+
+        <!-- Prompt Input -->
+        <div>
+            <label for="prompt-input" class="block text-sm font-medium text-gray-300 mb-2">Your Prompt:</label>
+            <textarea id="prompt-input" rows="4" class="w-full p-4 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:outline-none transition" placeholder="e.g., 'Create a red box and a blue circle connected by a hinge'"></textarea>
+        </div>
+
+        <!-- Generate Button -->
+        <div class="text-center">
+            <button id="generate-btn" class="w-full sm:w-auto bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-3 px-8 rounded-lg transition-all duration-300 ease-in-out transform hover:scale-105 flex items-center justify-center mx-auto">
+                <span id="btn-text">Generate Script</span>
+                <div id="loader" class="loader hidden ml-3"></div>
+            </button>
+        </div>
+
+        <!-- Generated Script Output -->
+        <div class="pt-4">
+            <div class="flex justify-between items-center mb-2">
+                 <h2 class="text-xl font-semibold text-gray-300">Generated Script:</h2>
+                 <button id="copy-btn" class="bg-gray-700 hover:bg-gray-600 text-gray-300 font-bold py-1 px-3 rounded-md text-sm transition-colors">Copy Code</button>
+            </div>
+            <div class="bg-gray-900 rounded-lg p-4 h-96 overflow-y-auto border border-gray-700">
+                <pre><code id="output-code" class="text-gray-300 whitespace-pre-wrap">// Your generated script will appear here...</code></pre>
+            </div>
+             <p id="copy-feedback" class="text-green-400 text-sm mt-2 text-center h-4"></p>
+        </div>
+    </div>
+
+    <script>
+        const generateBtn = document.getElementById('generate-btn');
+        const btnText = document.getElementById('btn-text');
+        const loader = document.getElementById('loader');
+        const promptInput = document.getElementById('prompt-input');
+        const outputCode = document.getElementById('output-code');
+        const copyBtn = document.getElementById('copy-btn');
+        const copyFeedback = document.getElementById('copy-feedback');
+
+        generateBtn.addEventListener('click', () => {
+            const prompt = promptInput.value;
+            if (!prompt) {
+                alert("Please enter a prompt!");
+                return;
+            }
+
+            // --- Show loading state ---
+            btnText.textContent = 'Generating...';
+            loader.classList.remove('hidden');
+            generateBtn.disabled = true;
+            outputCode.textContent = '// Please wait, the AI is thinking...';
+
+            // --- THIS IS WHERE WE WILL CONNECT TO THE BACKEND LATER ---
+            // For now, we'll simulate a delay and show a placeholder.
+            setTimeout(() => {
+                // --- Hide loading state ---
+                btnText.textContent = 'Generate Script';
+                loader.classList.add('hidden');
+                generateBtn.disabled = false;
+
+                // Display a placeholder script
+                const placeholderScript = `/**\n * AI Generated Script for:\n * \"${prompt}\"\n */\n\n// Backend is not connected yet.\n// This is a placeholder script.\n\nWorld.clearAll();\nvar box = World.addRectangle(1, 1);\nbox.setFillColor(1, 0, 0, 1); // Red\n`;
+                outputCode.textContent = placeholderScript;
+            }, 2000); // Simulate a 2-second generation time
+        });
+        
+        copyBtn.addEventListener('click', () => {
+            const codeToCopy = outputCode.textContent;
+            
+            // A trick to copy to clipboard that works in secure contexts like this one
+            const textarea = document.createElement('textarea');
+            textarea.value = codeToCopy;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+
+            // Show feedback to the user
+            copyFeedback.textContent = 'Copied to clipboard!';
+            setTimeout(() => {
+                copyFeedback.textContent = '';
+            }, 2000);
+        });
+
+    </script>
+</body>
+</html>
+
