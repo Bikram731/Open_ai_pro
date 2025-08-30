@@ -22,7 +22,7 @@
         "params": "body1 (Body), body2 (Body)"
       },
       "addDistanceJoint": {
-        "description": "Connects two bodies ensuring the distance between them is constant. Can also act as a spring.",
+        "description": "Connects two bodies ensuring the distance between them is constant.",
         "params": "body1 (Body), body2 (Body), anchor1 (Vector2), anchor2 (Vector2)"
       },
       "addFrictionJoint": {

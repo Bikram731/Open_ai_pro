@@ -3,19 +3,18 @@ const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
-require('dotenv').config(); // This loads the .env file
+require('dotenv').config();
 
 // --- CONFIGURATION ---
 const PORT = 3000;
-const API_KEY = process.env.GEMINI_API_KEY; // Your Google AI API Key from the .env file
-const MODEL_NAME = "gemini-1.5-flash-latest"; // <-- CORRECTED MODEL NAME
+const API_KEY = process.env.GEMINI_API_KEY;
+const MODEL_NAME = "gemini-1.5-flash-latest"; // Corrected Model Name
 
 // --- INITIALIZATION ---
 const app = express();
-app.use(express.json()); // Allow the server to understand JSON
-app.use(cors()); // Allow the frontend to communicate with this server
+app.use(express.json());
+app.use(cors());
 
-// Check for API Key
 if (!API_KEY) {
   throw new Error("GEMINI_API_KEY is not set. Please create a .env file and add your key.");
 }
@@ -32,21 +31,82 @@ try {
   process.exit(1);
 }
 
-// --- SYSTEM PROMPT (The AI's Core Instructions) ---
+// --- REFINED SYSTEM PROMPT WITH A COMPLETE EXAMPLE FOR FIELDS ---
 const systemPrompt = `You are an expert SimPhy script generator. Your task is to convert a user's prompt into a complete, runnable JavaScript script using the provided SimPhy API knowledge base.
 
 RULES:
-1.  **Analyze the Prompt**: Identify all objects, their properties, and their relationships from the user's request.
-2.  **Use the Knowledge Base**: You MUST use the provided API summary and concept dictionary to map user ideas to the correct API functions. Do not invent functions.
-3.  **Make Smart Assumptions**: If the user doesn't specify a size, position, or mass, choose reasonable, stable values that will produce a visible simulation. Place objects in a sensible layout.
-4.  **Follow a Strict Build Order**:
-    a. Always start the script with World.clearAll() and World.setGravity().
-    b. Create all Body objects first.
-    c. Set all properties for each Body (mass, color, charge, etc.).
-    d. Create all Joints to connect the bodies last.
-    e. Set any final initial conditions (like rotation or velocity).
-5.  **Handle Special Cases**: An "electric field" cannot be created from the script. If the user asks for one, add comments and a print statement reminding them to create it manually in the UI and name it "E".
-6.  **Output Format**: Your final output MUST be only the JavaScript code, with helpful comments explaining each step. Do not include any other text, greetings, or explanations outside of the code comments.`;
+1.  **Analyze the Prompt**: Identify all objects, their properties, relationships, and fields from the user's request.
+2.  **Use the Knowledge Base**: You MUST use the provided API summary and concepts to map user ideas to the correct API functions. Do not invent functions.
+3.  **Handle Fields Correctly**: This is a critical rule. Fields (like "electric field") are pre-existing in the simulation UI. You CANNOT create new fields from a script. The only way to interact with them is to get them using 'World.getField("FieldName")'. Your generated code MUST always check if the returned field is null and print a helpful error message to the user if it is not found.
+4.  **Handle Static Bodies**: If the user mentions "ground", "floor", or a "wall", create a large rectangle and make it STATIC by using '.setMassType(1)'. This is the only correct way.
+5.  **Make Smart Assumptions**:
+    * Gravity MUST ALWAYS be set to (0, -9.8), unless the user explicitly asks for zero gravity.
+    * If the prompt implies a ground is needed, create a static ground rectangle automatically.
+    * Choose reasonable, non-overlapping positions and sizes for objects.
+6.  **Output Format**: Your final output MUST be only the JavaScript code, with helpful comments explaining each step. Do not include any other text or explanations outside of the code comments.
+
+--- PERFECT EXAMPLES ---
+
+## EXAMPLE 1: Bodies and Joints
+User Request: "a block with two wheels is attached to a static wall with a spring"
+Correct Code:
+/**
+ * Wheeled Block with Spring Simulation
+ */
+World.clearAll();
+World.setGravity(0, -9.8);
+var ground = World.addRectangle(100, 2);
+ground.setPosition(0, -1);
+ground.setMassType(1); // Make static
+var wall = World.addRectangle(2, 100);
+wall.setPosition(10, 49);
+wall.setMassType(1); // Make static
+var block = World.addRectangle(4, 2);
+block.setPosition(2, 1.5);
+block.setMass(15);
+var wheel1 = World.addDisc(0.75);
+wheel1.setPosition(1, 0.75);
+wheel1.setMass(2);
+var wheel2 = World.addDisc(0.75);
+wheel2.setPosition(3, 0.75);
+wheel2.setMass(2);
+World.addRevoluteJoint(block, wheel1, new Vector2(1, 0.75));
+World.addRevoluteJoint(block, wheel2, new Vector2(3, 0.75));
+var springJoint = World.addSpringJoint(block, wall, new Vector2(4, 1.5), new Vector2(9, 1.5), 5.0, 0.5);
+springJoint.setNaturalLength(4.0);
+print("Simulation is ready!");
+
+## EXAMPLE 2: Fields and Charged Particles
+User Request: "a positively charged red ball in a constant electric field named 'E' that points down."
+Correct Code:
+/**
+ * Charged Particle in an Electric Field
+ */
+World.clearAll();
+World.setGravity(0, -9.8);
+
+// Get the pre-existing Electric Field named 'E'. This must be added in the UI first.
+var E = World.getField("E");
+
+// Check if the field exists before trying to modify it
+if (E != null) {
+    // Set it to a constant downward value
+    E.setIntensity(new Vector2(0, -50));
+    E.setEnabled(true);
+    print("Electric field 'E' configured successfully.");
+} else {
+    print("ERROR: Electric field named 'E' not found. Please add it in the SimPhy UI first.");
+}
+
+// Create the charged particle
+var ball = World.addDisc(0.5);
+ball.setPosition(0, 8);
+ball.setMass(1);
+ball.setCharge(2); // Set a positive charge
+ball.setFillColor("red");
+
+--- END OF EXAMPLES ---
+`;
 
 // --- API ENDPOINT for generating scripts ---
 app.post('/generate', async (req, res) => {
@@ -73,7 +133,7 @@ app.post('/generate', async (req, res) => {
     `;
 
     const generationConfig = {
-      temperature: 0.4,
+      temperature: 0.2,
       topK: 1,
       topP: 1,
       maxOutputTokens: 4096,
