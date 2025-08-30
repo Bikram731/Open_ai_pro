@@ -6,7 +6,6 @@
     <title>SimPhy AI Script Generator</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Simple animation for the loading spinner */
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
@@ -65,37 +64,59 @@
         const copyBtn = document.getElementById('copy-btn');
         const copyFeedback = document.getElementById('copy-feedback');
 
-        generateBtn.addEventListener('click', () => {
+        // --- FETCH LOGIC (CORRECTED) ---
+        generateBtn.addEventListener('click', async () => {
             const prompt = promptInput.value;
             if (!prompt) {
                 alert("Please enter a prompt!");
                 return;
             }
 
-            // --- Show loading state ---
+            // Show loading state
             btnText.textContent = 'Generating...';
             loader.classList.remove('hidden');
             generateBtn.disabled = true;
-            outputCode.textContent = '// Please wait, the AI is thinking...';
+            outputCode.textContent = '// Please wait, contacting the AI model...';
+            copyFeedback.textContent = '';
 
-            // --- THIS IS WHERE WE WILL CONNECT TO THE BACKEND LATER ---
-            // For now, we'll simulate a delay and show a placeholder.
-            setTimeout(() => {
-                // --- Hide loading state ---
+            try {
+                // Make a real request to your Node.js backend
+                const response = await fetch('http://localhost:3000/generate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ prompt: prompt }),
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Server responded with status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                
+                // Clean up the response from markdown if present
+                let finalScript = data.script.trim();
+                if (finalScript.startsWith('```javascript')) {
+                    finalScript = finalScript.substring(13, finalScript.length - 3).trim();
+                }
+                
+                outputCode.textContent = finalScript;
+
+            } catch (error) {
+                console.error("Fetch error:", error);
+                outputCode.textContent = `// An error occurred:\n// ${error.message}`;
+            } finally {
+                // Hide loading state
                 btnText.textContent = 'Generate Script';
                 loader.classList.add('hidden');
                 generateBtn.disabled = false;
-
-                // Display a placeholder script
-                const placeholderScript = `/**\n * AI Generated Script for:\n * \"${prompt}\"\n */\n\n// Backend is not connected yet.\n// This is a placeholder script.\n\nWorld.clearAll();\nvar box = World.addRectangle(1, 1);\nbox.setFillColor(1, 0, 0, 1); // Red\n`;
-                outputCode.textContent = placeholderScript;
-            }, 2000); // Simulate a 2-second generation time
+            }
         });
         
         copyBtn.addEventListener('click', () => {
             const codeToCopy = outputCode.textContent;
             
-            // A trick to copy to clipboard that works in secure contexts like this one
             const textarea = document.createElement('textarea');
             textarea.value = codeToCopy;
             document.body.appendChild(textarea);
@@ -103,13 +124,11 @@
             document.execCommand('copy');
             document.body.removeChild(textarea);
 
-            // Show feedback to the user
             copyFeedback.textContent = 'Copied to clipboard!';
             setTimeout(() => {
                 copyFeedback.textContent = '';
             }, 2000);
         });
-
     </script>
 </body>
 </html>

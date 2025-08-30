@@ -8,7 +8,7 @@ require('dotenv').config(); // This loads the .env file
 // --- CONFIGURATION ---
 const PORT = 3000;
 const API_KEY = process.env.GEMINI_API_KEY; // Your Google AI API Key from the .env file
-const MODEL_NAME = "google/gemini-pro";
+const MODEL_NAME = "gemini-1.5-flash-latest"; // <-- CORRECTED MODEL NAME
 
 // --- INITIALIZATION ---
 const app = express();
@@ -17,20 +17,19 @@ app.use(cors()); // Allow the frontend to communicate with this server
 
 // Check for API Key
 if (!API_KEY) {
-  throw new Error("GEMINI_API_KEY is not set. Please create a .env file in the 'backend' folder and add your key. Example: GEMINI_API_KEY=YOUR_API_KEY_HERE");
+  throw new Error("GEMINI_API_KEY is not set. Please create a .env file and add your key.");
 }
 const genAI = new GoogleGenerativeAI(API_KEY);
 
 // --- LOAD THE KNOWLEDGE BASE ---
 let knowledgeBase;
 try {
-  // Reads the file you created
   const rawData = fs.readFileSync('knowledge_base.json');
   knowledgeBase = JSON.parse(rawData);
   console.log("Successfully loaded the SimPhy knowledge base.");
 } catch (error) {
   console.error("CRITICAL ERROR: Failed to load or parse knowledge_base.json:", error);
-  process.exit(1); // Stop the server if the knowledge base can't be loaded
+  process.exit(1);
 }
 
 // --- SYSTEM PROMPT (The AI's Core Instructions) ---
@@ -62,8 +61,6 @@ app.post('/generate', async (req, res) => {
   try {
     const model = genAI.getGenerativeModel({ model: MODEL_NAME });
 
-    // This is the RAG (Retrieval-Augmented Generation) step.
-    // We augment the user's prompt with our system instructions and the entire knowledge base.
     const augmentedPrompt = `
       ---
       HERE IS THE KNOWLEDGE BASE. USE ONLY THESE FUNCTIONS AND CONCEPTS:
@@ -84,7 +81,6 @@ app.post('/generate', async (req, res) => {
 
     const chat = model.startChat({
         generationConfig,
-        // Provide the main system prompt as the start of the conversation history
         history: [{ role: "user", parts: [{ text: systemPrompt }] }]
     });
 
